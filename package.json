@@ -6,7 +6,8 @@
   "author": "Pablo Silva <pablo@buybye.com.br>",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx watch ./src/server.ts",
+    "dev": "tsx watch src/server.ts",
+    "knex": "node --loader tsx ./node_modules/knex/bin/cli.js",
     "lint": "eslint src --ext .ts --fix"
   },
   "devDependencies": {
