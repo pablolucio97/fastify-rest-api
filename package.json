@@ -5,8 +5,15 @@
   "repository": "https://github.com/pablolucio97/fastify-rest-api.git",
   "author": "Pablo Silva <pablo@buybye.com.br>",
   "license": "MIT",
+  "scripts": {
+    "dev": "tsx watch ./src/server.ts"
+  },
   "devDependencies": {
     "@types/node": "^20.4.1",
+    "tsx": "^3.12.7",
     "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "fastify": "^4.19.2"
   }
 }
