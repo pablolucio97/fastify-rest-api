@@ -1,0 +1,12 @@
+{
+  "name": "fastify-rest-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/pablolucio97/fastify-rest-api.git",
+  "author": "Pablo Silva <pablo@buybye.com.br>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.4.1",
+    "typescript": "^5.1.6"
+  }
+}
