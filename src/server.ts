@@ -4,7 +4,8 @@ const app = fastify()
 const port = 3336
 
 app.get('/test', async () => {
-  const tables = await knex('sqlite_schema').select('*')
+  const tables = await knex('transactions').select('*')
+    .where('amount', 1000.99)
   return tables
 })
 
