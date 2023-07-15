@@ -1,13 +1,9 @@
 import fastify from 'fastify'
-import { knex } from './database'
+import { transactionsRoutes } from './routes/transactions'
 const app = fastify()
 const port = 3336
 
-app.get('/test', async () => {
-  const tables = await knex('transactions').select('*')
-    .where('amount', 1000.99)
-  return tables
-})
+app.register(transactionsRoutes)
 
 app.listen(
   {
