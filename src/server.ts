@@ -1,8 +1,11 @@
 import fastify from 'fastify'
 import { transactionsRoutes } from './routes/transactions'
+import cookie from '@fastify/cookie'
 
 const port = 3336
 const app = fastify()
+
+app.register(cookie)
 
 app.register(transactionsRoutes, {
   //DEFINES THE ROUTE PREFIX EX: 'users, transactions...'

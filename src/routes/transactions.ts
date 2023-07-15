@@ -16,12 +16,26 @@ export async function transactionsRoutes(app: FastifyInstance) {
         //VALIDATES IF THE RECEIVED BODY IS VALID, OTHERWISE THROWS AN ERROR
         const { title, amount, type } = createTransactionBodySchema.parse(req.body)
 
+        //READ sessionID
+        let sessionId = req.cookies.sessionId
+
+        if(!sessionId) {
+            // IF sessionId DOESN'T EXISTS ASSIGN A randomUUID() TO IT
+            sessionId = randomUUID()
+            // RETURNS ON RESPONSE A NEW COOKIE NAMED AS sessionId READABLE FOR ALL ROUTES
+            rep.cookie('sessionId', sessionId, {
+                path: '/',
+                maxAge: 1000 * 60 * 60 * 24 * 7 // 7 DAYS
+            })
+        }
+
         //INSERTS A NEW TRANSACTION INTO TRANSACTIONS
         await knex('transactions').insert({
             id: randomUUID(),
             title,
             //INSERT THE AMOUNT VALUE AS CREDIT OR DEBIT
-            amount: type === 'credit' ? amount : amount * -1
+            amount: type === 'credit' ? amount : amount * -1,
+            session_id: sessionId
         })
 
         return rep.status(201).send()
@@ -48,6 +62,12 @@ export async function transactionsRoutes(app: FastifyInstance) {
         return{
             transaction
         }
+    })
+
+    app.get('/total', async () => {
+        //GET THE SUM OF ALL TRANSACTIONS
+        const totalTransactions = await knex('transactions').sum('amount', { as: 'amount'}).first()
+        return {totalTransactions}
     })
 
 
