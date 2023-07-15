@@ -1,9 +1,13 @@
 import fastify from 'fastify'
 import { transactionsRoutes } from './routes/transactions'
-const app = fastify()
-const port = 3336
 
-app.register(transactionsRoutes)
+const port = 3336
+const app = fastify()
+
+app.register(transactionsRoutes, {
+  //DEFINES THE ROUTE PREFIX EX: 'users, transactions...'
+  prefix: 'transactions'
+})
 
 app.listen(
   {
