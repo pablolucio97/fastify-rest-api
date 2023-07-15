@@ -26,4 +26,29 @@ export async function transactionsRoutes(app: FastifyInstance) {
 
         return rep.status(201).send()
     })
+
+    app.get('/', async () => {
+        //GET ALL TRANSACTIONS FROM TRANSACTIONS TABLE
+        const transactions = await knex('transactions').select('*')
+        return { transactions }
+    })
+
+    app.get('/:id', async (req) => {
+        //SCHEMA FOR CHECK ID AS STRING AND UUID
+        const getTransactionIdParam = Zod.object({
+            id: Zod.string().uuid()
+        })
+
+        //VALIDATES THE ID FROM REQ.PARAM
+        const { id } = getTransactionIdParam.parse(req.params)
+
+        //GET THE SINGLE TRANSACTION THAT MATCHES TO THE ID WHERE REQ.ID = ID
+        const transaction = await knex('transactions').where('id', id).first()
+
+        return{
+            transaction
+        }
+    })
+
+
 }
