@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto'
 import { checkSessionIdExists } from "../middlewares/checkSessionIdExists"
 
 export async function transactionsRoutes(app: FastifyInstance) {
+
     app.post('/', async (req, rep) => {
 
         //SCHEMA FOR ZOD REQUEST BODY VALIDATION
@@ -46,7 +47,7 @@ export async function transactionsRoutes(app: FastifyInstance) {
         preHandler: [checkSessionIdExists]
     }, async (req, res) => {
         const { sessionId } = req.cookies
-        //GET ALL TRANSACTIONS FROM TRANSACTIONS TABLE
+        //GET ALL TRANSACTIONS FROM TRANSACTIONS TABLE BY SESSIONID
         const transactions = await knex('transactions')
             .where('session_id', sessionId)
             .select('*')
@@ -65,7 +66,7 @@ export async function transactionsRoutes(app: FastifyInstance) {
         const { id } = getTransactionIdParam.parse(req.params)
         const { sessionId } = req.cookies
 
-        //GET THE SINGLE TRANSACTION THAT MATCHES TO THE ID WHERE REQ.ID = ID
+        //GET THE SINGLE TRANSACTION THAT MATCHES TO THE ID WHERE REQ.ID = ID AND SESSIONID
         const transaction = await knex('transactions')
             .where({
                 'id': id,
@@ -82,7 +83,7 @@ export async function transactionsRoutes(app: FastifyInstance) {
         preHandler: [checkSessionIdExists]
     }, async (req) => {
         const { sessionId } = req.cookies
-        //GET THE SUM OF ALL TRANSACTIONS
+        //GET THE SUM OF ALL TRANSACTIONS BY SESSIONID
         const totalTransactions = await knex('transactions')
             .where('session_id', sessionId)
             .sum('amount', { as: 'amount' }).first()
