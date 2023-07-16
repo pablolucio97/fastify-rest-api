@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify"
 import { knex } from '../database'
 import { z as Zod } from 'zod'
 import { randomUUID } from 'node:crypto'
+import { checkSessionIdExists } from "../middlewares/checkSessionIdExists"
 
 export async function transactionsRoutes(app: FastifyInstance) {
     app.post('/', async (req, rep) => {
@@ -19,7 +20,7 @@ export async function transactionsRoutes(app: FastifyInstance) {
         //READ sessionID
         let sessionId = req.cookies.sessionId
 
-        if(!sessionId) {
+        if (!sessionId) {
             // IF sessionId DOESN'T EXISTS ASSIGN A randomUUID() TO IT
             sessionId = randomUUID()
             // RETURNS ON RESPONSE A NEW COOKIE NAMED AS sessionId READABLE FOR ALL ROUTES
@@ -41,13 +42,20 @@ export async function transactionsRoutes(app: FastifyInstance) {
         return rep.status(201).send()
     })
 
-    app.get('/', async () => {
+    app.get('/', {
+        preHandler: [checkSessionIdExists]
+    }, async (req, res) => {
+        const { sessionId } = req.cookies
         //GET ALL TRANSACTIONS FROM TRANSACTIONS TABLE
-        const transactions = await knex('transactions').select('*')
+        const transactions = await knex('transactions')
+            .where('session_id', sessionId)
+            .select('*')
         return { transactions }
     })
 
-    app.get('/:id', async (req) => {
+    app.get('/:id', {
+        preHandler: [checkSessionIdExists]
+    }, async (req) => {
         //SCHEMA FOR CHECK ID AS STRING AND UUID
         const getTransactionIdParam = Zod.object({
             id: Zod.string().uuid()
@@ -55,19 +63,30 @@ export async function transactionsRoutes(app: FastifyInstance) {
 
         //VALIDATES THE ID FROM REQ.PARAM
         const { id } = getTransactionIdParam.parse(req.params)
+        const { sessionId } = req.cookies
 
         //GET THE SINGLE TRANSACTION THAT MATCHES TO THE ID WHERE REQ.ID = ID
-        const transaction = await knex('transactions').where('id', id).first()
+        const transaction = await knex('transactions')
+            .where({
+                'id': id,
+                session_id: sessionId
+            })
+            .first()
 
-        return{
+        return {
             transaction
         }
     })
 
-    app.get('/total', async () => {
+    app.get('/total', {
+        preHandler: [checkSessionIdExists]
+    }, async (req) => {
+        const { sessionId } = req.cookies
         //GET THE SUM OF ALL TRANSACTIONS
-        const totalTransactions = await knex('transactions').sum('amount', { as: 'amount'}).first()
-        return {totalTransactions}
+        const totalTransactions = await knex('transactions')
+            .where('session_id', sessionId)
+            .sum('amount', { as: 'amount' }).first()
+        return { totalTransactions }
     })
 
 
