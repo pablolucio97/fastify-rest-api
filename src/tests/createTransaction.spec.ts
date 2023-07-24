@@ -48,4 +48,33 @@ describe('Transactions', () => {
             })
         ])
     })
+
+    it('should be able to list a specific transaction', async () => {
+        const createTransactionResponse = await supertest(app.server)
+            .post('/transactions')
+            .send({
+                title: "Freela",
+                amount: 5000,
+                type: "credit"
+            })
+
+        const cookie = createTransactionResponse.get('Set-Cookie')
+
+        const listTransactionsResponse = await supertest(app.server)
+            .get('/transactions')
+            .set('Cookie', cookie)
+
+        const transactionId = await listTransactionsResponse.body.transactions[0].id
+
+        const getTransactionResponse = await supertest(app.server)
+            .get(`/transactions/${transactionId}`)
+            .set('Cookie', cookie)
+
+        expect(getTransactionResponse.body.transaction).toEqual(
+            expect.objectContaining({
+                title: "Freela",
+                amount: 5000,
+            })
+        )
+    })
 })
