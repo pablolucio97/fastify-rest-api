@@ -1,6 +1,6 @@
-import 'dotenv/config'
 import { env } from './env'
 import { knex as knexSetup, Knex } from 'knex'
+import 'dotenv/config'
 
 export const config: Knex.Config = {
   client: 'sqlite',

@@ -1,4 +1,13 @@
 import { z as Zod } from 'zod'
+import { config } from 'dotenv'
+
+if (process.env.NODE_ENV === 'test') {
+    //SEARCH FOR ENV VARS ON DEFAULT test.env FILE
+    config({ path: '.env.test' })
+} else {
+    //SEARCH FOR ENV VARS ON DEFAULT .env FILE
+    config()
+}
 
 const envSchema = Zod.object({
     DATABASE_URL: Zod.string(),
@@ -9,7 +18,7 @@ const envSchema = Zod.object({
 
 const _env = envSchema.safeParse(process.env)
 
-if(_env.success === false){
+if (_env.success === false) {
     console.error('❗ Invalid environment variable', _env.error.format)
     throw new Error('❗ Invalid environment variable')
 }
