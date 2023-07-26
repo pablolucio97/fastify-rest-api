@@ -11,9 +11,9 @@ if (process.env.NODE_ENV === 'test') {
 
 const envSchema = Zod.object({
     DATABASE_URL: Zod.string(),
-    PORT: Zod.number().default(3333),
+    DATABASE_CLIENT: Zod.enum(['sqlite', 'pg']),
+    PORT: Zod.coerce.number().default(3333),
     NODE_ENV: Zod.enum(['production', 'development', 'test']).default('production')
-
 })
 
 const _env = envSchema.safeParse(process.env)
